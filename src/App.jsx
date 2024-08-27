@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 
-function App() {
+const FollowMouse = () => {
   const [enable, setEnable] = useState(false)
-  const [position,setPositio] = useState({x: 0, y:0})
+  const [position,setPosition] = useState({x: 0, y: 0})
 
   useEffect(() =>{
     console.log('efect', { enable })
@@ -11,11 +11,20 @@ function App() {
     const handleMove = (event) => {
       const { clientX, clientY } = event
       console.log('handleMove', { clientX, clientY})
+      setPosition({x: clientX, y: clientY})
     }
     if (enable){
       window.addEventListener('pointermove', handleMove)
     }
 
+  // cleanup:
+  // => cuando el componente se desmonta
+  // => cuando cambian las dependencias, antes de ejecutar
+  //
+  return () => {
+    // Limpiamos el efecto(useEffect) => limpiamos las suscripciones
+    window.removeEventListener('pointermove', handleMove)
+  } 
   }, [enable])
 
   return (
@@ -30,7 +39,7 @@ function App() {
       top: -20,
       width: 40,
       height: 40,
-      transform: 'traslate(opx, 0px)'
+      transform: `translate(${position.x}px,${position.y}px)`
     }}>
 
     </div>
@@ -38,6 +47,12 @@ function App() {
       {enable ? 'Desactivar' : 'Activar'} seguir puntero
     </button>
     </main>
+  )
+}
+
+function App () {
+  return(
+    <FollowMouse/>
   )
 }
 
